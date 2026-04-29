@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Ticketing System - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-slate-800 text-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-slate-950 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="text-2xl font-bold text-blue-400">
+                            <span class="text-white">IT</span>Ticket
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="window.location.href='login.html'" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg font-medium transition">
+                        Login / Sign Up
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="min-h-screen flex items-center justify-center px-4">
+        <div class="max-w-4xl w-full">
+            <div class="text-center mb-16">
+                <h1 class="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                    IT Ticketing System
+                </h1>
+                <p class="text-xl text-gray-300 mb-8">
+                    Streamline your technical support and issue resolution process
+                </p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="bg-slate-800 p-6 rounded-lg hover:bg-slate-700 transition transform hover:scale-105">
+                    <div class="text-3xl mb-4">🎫</div>
+                    <h3 class="font-bold text-lg mb-2">Easy Tickets</h3>
+                    <p class="text-gray-400 text-sm">Submit issues quickly with our simple form</p>
+                </div>
+
+                <div class="bg-slate-800 p-6 rounded-lg hover:bg-slate-700 transition transform hover:scale-105">
+                    <div class="text-3xl mb-4">⚡</div>
+                    <h3 class="font-bold text-lg mb-2">Fast Resolution</h3>
+                    <p class="text-gray-400 text-sm">Track resolution times and priorities</p>
+                </div>
+
+                <div class="bg-slate-800 p-6 rounded-lg hover:bg-slate-700 transition transform hover:scale-105">
+                    <div class="text-3xl mb-4">📊</div>
+                    <h3 class="font-bold text-lg mb-2">Analytics</h3>
+                    <p class="text-gray-400 text-sm">View performance metrics and reports</p>
+                </div>
+
+                <div class="bg-slate-800 p-6 rounded-lg hover:bg-slate-700 transition transform hover:scale-105">
+                    <div class="text-3xl mb-4">🔔</div>
+                    <h3 class="font-bold text-lg mb-2">Notifications</h3>
+                    <p class="text-gray-400 text-sm">Get instant updates on your tickets</p>
+                </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                <button onclick="window.location.href='pages/user-portal.html'" class="px-8 py-4 bg-blue-500 hover:bg-blue-600 rounded-lg font-bold text-lg transition transform hover:scale-105">
+                    Submit a Ticket
+                </button>
+                <button onclick="window.location.href='pages/admin-dashboard.html'" class="px-8 py-4 bg-green-500 hover:bg-green-600 rounded-lg font-bold text-lg transition transform hover:scale-105">
+                    Admin Dashboard
+                </button>
+            </div>
+
+            <!-- Info Section -->
+            <div class="mt-16 bg-slate-800 p-8 rounded-lg border border-slate-700">
+                <h2 class="text-2xl font-bold mb-4 text-cyan-400">How It Works</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <div class="text-2xl font-bold text-blue-400 mb-2">1</div>
+                        <h3 class="font-bold mb-2">Submit Issue</h3>
+                        <p class="text-gray-400">Fill out the ticket form with your issue details and attachments</p>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-green-400 mb-2">2</div>
+                        <h3 class="font-bold mb-2">IT Team Reviews</h3>
+                        <p class="text-gray-400">Our team receives notification and assigns to the right person</p>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-cyan-400 mb-2">3</div>
+                        <h3 class="font-bold mb-2">Get Resolved</h3>
+                        <p class="text-gray-400">Receive updates and notifications until your issue is resolved</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-700 mt-16 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-400">
+            <p>&copy; 2026 Internal IT Ticketing System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK (Compat Version - for global access) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Config -->
+    <script src="js/firebase-config.js"></script>
+
+    <!-- Authentication -->
+    <script src="js/auth.js"></script>
+
+    <!-- Chatbot Scripts -->
+    <script src="js/chatbot.js"></script>
+</body>
+</html>

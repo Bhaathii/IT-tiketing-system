@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - IT Ticketing System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/chatbot.css">
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-slate-800 text-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-slate-950 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="../index.html" class="text-2xl font-bold text-blue-400">
+                        <span class="text-white">IT</span>Ticket
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-300" id="admin-user">🛡️ Admin Dashboard</span>
+                    <button onclick="handleLogout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-6 py-8">
+        <!-- Dashboard Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold mb-2">Dashboard</h1>
+            <p class="text-gray-400">Manage and track all support tickets</p>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-800 p-6 rounded-lg border-l-4 border-blue-500">
+                <div class="text-3xl font-bold text-blue-400" id="totalTickets">0</div>
+                <div class="text-gray-400">Total Tickets</div>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-lg border-l-4 border-yellow-500">
+                <div class="text-3xl font-bold text-yellow-400" id="newTickets">0</div>
+                <div class="text-gray-400">New Tickets</div>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-lg border-l-4 border-orange-500">
+                <div class="text-3xl font-bold text-orange-400" id="inProgressTickets">0</div>
+                <div class="text-gray-400">In Progress</div>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-lg border-l-4 border-green-500">
+                <div class="text-3xl font-bold text-green-400" id="resolvedTickets">0</div>
+                <div class="text-gray-400">Resolved</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid lg:grid-cols-3 gap-6 mb-8">
+            <!-- Tickets List -->
+            <div class="lg:col-span-2 bg-slate-800 rounded-lg shadow-xl border border-slate-700 overflow-hidden">
+                <div class="p-6 border-b border-slate-700">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold text-cyan-400">Tickets Queue</h2>
+                        <button id="exportExcelBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium transition flex items-center gap-2">
+                            <span>📥</span>
+                            <span>Export to Excel</span>
+                        </button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="filterTickets('All')" class="px-3 py-1 bg-blue-600 text-white rounded filter-btn active">All</button>
+                        <button onclick="filterTickets('New')" class="px-3 py-1 bg-slate-600 hover:bg-slate-500 rounded filter-btn">New</button>
+                        <button onclick="filterTickets('In-Progress')" class="px-3 py-1 bg-slate-600 hover:bg-slate-500 rounded filter-btn">In Progress</button>
+                        <button onclick="filterTickets('Resolved')" class="px-3 py-1 bg-slate-600 hover:bg-slate-500 rounded filter-btn">Resolved</button>
+                    </div>
+                </div>
+
+                <div class="overflow-y-auto max-h-96">
+                    <div id="ticketsList" class="divide-y divide-slate-700">
+                        <div class="p-4 text-center text-gray-400">Loading tickets...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Priority Breakdown -->
+            <div class="bg-slate-800 rounded-lg shadow-xl border border-slate-700 p-6">
+                <h2 class="text-xl font-bold text-cyan-400 mb-4">Priority Breakdown</h2>
+                <canvas id="priorityChart"></canvas>
+                <div class="mt-6 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="w-3 h-3 bg-green-500 rounded"></span> Low
+                        </span>
+                        <span id="lowCount" class="font-bold">0</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="w-3 h-3 bg-yellow-500 rounded"></span> Medium
+                        </span>
+                        <span id="mediumCount" class="font-bold">0</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="w-3 h-3 bg-orange-500 rounded"></span> High
+                        </span>
+                        <span id="highCount" class="font-bold">0</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="w-3 h-3 bg-red-500 rounded"></span> Urgent
+                        </span>
+                        <span id="urgentCount" class="font-bold">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Row -->
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <!-- Department Issues -->
+            <div class="bg-slate-800 rounded-lg shadow-xl border border-slate-700 p-6">
+                <h2 class="text-xl font-bold text-cyan-400 mb-4">Issues by Department</h2>
+                <canvas id="departmentChart"></canvas>
+            </div>
+
+            <!-- Equipment Issues -->
+            <div class="bg-slate-800 rounded-lg shadow-xl border border-slate-700 p-6">
+                <h2 class="text-xl font-bold text-cyan-400 mb-4">Common Equipment Issues</h2>
+                <div id="equipmentIssues" class="space-y-3">
+                    <div class="p-3 bg-slate-700 rounded flex justify-between">
+                        <span>Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Average Resolution Time -->
+        <div class="bg-slate-800 rounded-lg shadow-xl border border-slate-700 p-6">
+            <h2 class="text-xl font-bold text-cyan-400 mb-4">Performance Metrics</h2>
+            <div class="grid md:grid-cols-4 gap-4">
+                <div class="bg-slate-700 p-4 rounded">
+                    <div class="text-2xl font-bold text-blue-400" id="avgResolutionTime">0h</div>
+                    <div class="text-sm text-gray-400">Avg Resolution Time</div>
+                </div>
+                <div class="bg-slate-700 p-4 rounded">
+                    <div class="text-2xl font-bold text-green-400" id="todayTickets">0</div>
+                    <div class="text-sm text-gray-400">Today's Tickets</div>
+                </div>
+                <div class="bg-slate-700 p-4 rounded">
+                    <div class="text-2xl font-bold text-cyan-400" id="resolvedPercent">0%</div>
+                    <div class="text-sm text-gray-400">Resolution Rate</div>
+                </div>
+                <div class="bg-slate-700 p-4 rounded">
+                    <div class="text-2xl font-bold text-yellow-400" id="overdue">0</div>
+                    <div class="text-sm text-gray-400">Overdue Tickets</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Details Modal -->
+    <div id="ticketModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-800 rounded-lg p-8 max-w-2xl w-full max-h-96 overflow-y-auto border border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-cyan-400">Ticket Details</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div id="modalContent" class="space-y-4"></div>
+            <div class="mt-6 flex gap-2">
+                <select id="statusSelect" class="flex-1 px-4 py-2 bg-slate-600 border border-slate-500 rounded-lg">
+                    <option value="New">New</option>
+                    <option value="In-Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+                <input type="text" id="assigneeName" placeholder="Assignee Name" class="flex-1 px-4 py-2 bg-slate-600 border border-slate-500 rounded-lg">
+                <button onclick="updateTicket()" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-700 mt-16 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-400">
+            <p>&copy; 2026 Internal IT Ticketing System. Admin Dashboard</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK (Compat Version - for global access) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Config (must load before auth.js) -->
+    <script src="../js/firebase-config.js"></script>
+    
+    <!-- Authentication (depends on firebase-config.js) -->
+    <script src="../js/auth.js"></script>
+    
+    <!-- Chart.js for dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <!-- SheetJS for Professional Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.18.5/package/dist/xlsx.full.min.js"></script>
+    
+    <!-- ExcelJS for Excel Styling Support -->
+    <script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+    
+    <!-- Chatbot Scripts -->
+    <script src="../js/chatbot.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="../js/admin-dashboard.js"></script>
+    
+    <!-- Auth Check -->
+    <script>
+        // Check admin authentication on page load
+        async function initPage() {
+            const user = await authManager.waitForAuth();
+            if (!user) {
+                window.location.href = '../login.html';
+                return;
+            }
+            
+            if (!authManager.isAdmin()) {
+                alert('Access Denied: Admin only');
+                window.location.href = '../index.html';
+                return;
+            }
+            
+            document.getElementById('admin-user').textContent = `👤 Admin: ${user.displayName || user.email}`;
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                console.log('🔐 Logout initiated from admin dashboard');
+                authManager.logout().then((result) => {
+                    if (result.success) {
+                        console.log('🔐 Logout successful - redirecting to login');
+                        window.location.href = '../login.html';
+                    } else {
+                        alert('Logout failed: ' + result.error);
+                    }
+                }).catch((error) => {
+                    console.error('🔐 Logout error:', error);
+                    alert('Logout error: ' + error.message);
+                });
+            }
+        }
+
+        initPage();
+    </script>
+</body>
+</html>

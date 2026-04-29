@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tickets - IT Ticketing System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/chatbot.css">
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-slate-800 text-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-slate-950 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="../index.html" class="text-2xl font-bold text-blue-400">
+                        <span class="text-white">IT</span>Ticket
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-300" id="user-email">📋 My Tickets</span>
+                    <a href="user-portal.html" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition">
+                        New Ticket
+                    </a>
+                    <button onclick="handleLogout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto p-6 py-12">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold mb-2">My Tickets</h1>
+            <p class="text-gray-400">Track the status of your submitted support tickets</p>
+        </div>
+
+        <!-- Filter Options -->
+        <div class="flex gap-2 mb-6">
+            <button onclick="filterTickets('All')" class="px-4 py-2 bg-blue-600 rounded filter-btn active">All Tickets</button>
+            <button onclick="filterTickets('New')" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded filter-btn">New</button>
+            <button onclick="filterTickets('In-Progress')" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded filter-btn">In Progress</button>
+            <button onclick="filterTickets('Resolved')" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded filter-btn">Resolved</button>
+        </div>
+
+        <!-- Tickets Grid -->
+        <div id="ticketsContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="col-span-full text-center text-gray-400 py-12">
+                <p class="text-lg">Loading your tickets...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Details Modal -->
+    <div id="ticketModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-800 rounded-lg max-w-2xl w-full max-h-96 overflow-y-auto border border-slate-700">
+            <div class="sticky top-0 bg-slate-800 border-b border-slate-700 p-6 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-cyan-400">Ticket Details</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div id="modalContent" class="p-6 space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-700 mt-16 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-400">
+            <p>&copy; 2026 Internal IT Ticketing System. For urgent issues, call IT Support at ext. 5555</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK (Compat Version - for global access) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Config -->
+    <script src="../js/firebase-config.js"></script>
+    
+    <!-- Authentication -->
+    <script src="../js/auth.js"></script>
+    
+    <!-- Chatbot Scripts -->
+    <script src="../js/chatbot.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="../js/user-tickets.js"></script>
+    
+    <!-- Auth Check -->
+    <script>
+        // Check authentication on page load
+        async function initPage() {
+            const user = await authManager.waitForAuth();
+            if (!user) {
+                window.location.href = '../login.html';
+                return;
+            }
+            
+            document.getElementById('user-email').textContent = `👤 ${user.displayName || user.email}`;
+            
+            // Load user's tickets (will be filtered in user-tickets.js)
+            loadUserTickets(user.email);
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                console.log('🔐 Logout initiated from user tickets');
+                authManager.logout().then((result) => {
+                    if (result.success) {
+                        console.log('🔐 Logout successful - redirecting to login');
+                        window.location.href = '../login.html';
+                    } else {
+                        alert('Logout failed: ' + result.error);
+                    }
+                }).catch((error) => {
+                    console.error('🔐 Logout error:', error);
+                    alert('Logout error: ' + error.message);
+                });
+            }
+        }
+
+        initPage();
+    </script>
+</body>
+</html>

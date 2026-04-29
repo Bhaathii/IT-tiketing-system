@@ -1,0 +1,7 @@
+functions/node_modules/
+node_modules/
+.firebase/
+*.log
+check_excel_colors.py
+__pycache__/
+*.pyc
