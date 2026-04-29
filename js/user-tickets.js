@@ -2,9 +2,25 @@
 let allUserTickets = [];
 let currentFilter = 'All';
 
-// Initialize
+// Initialize (for unauthenticated / standalone usage)
 document.addEventListener('DOMContentLoaded', async () => {
-    // Get email from query parameter or ask user
+    // If an authManager exists and there's a logged-in user, do nothing here.
+    // The protected page (`pages/user-tickets.html`) uses its own auth check
+    // and will call `loadUserTickets()` with the authenticated user's email.
+    if (typeof authManager !== 'undefined') {
+        try {
+            const user = await authManager.waitForAuth();
+            if (user) {
+                // Authenticated context — avoid loading based on URL/localStorage
+                return;
+            }
+        } catch (e) {
+            // If auth check fails, continue with non-auth flow below
+            console.warn('Auth check failed in user-tickets init:', e.message);
+        }
+    }
+
+    // Non-authenticated or standalone usage: Get email from query parameter or ask user
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email') || localStorage.getItem('userEmail');
     

@@ -197,6 +197,98 @@ class AuthManager {
             });
         });
     }
+
+    /**
+     * Send password reset email to user
+     */
+    async sendPasswordResetEmail(email) {
+        try {
+            // Firebase will send a password reset email
+            await auth.sendPasswordResetEmail(email);
+            console.log('✅ Password reset email sent to:', email);
+            return { success: true, message: 'Password reset email sent successfully. Check your inbox for a link.' };
+        } catch (error) {
+            console.error('❌ Password reset error:', error.message);
+            // Handle specific Firebase errors
+            if (error.code === 'auth/user-not-found') {
+                return { success: false, error: 'No account found with this email address.' };
+            } else if (error.code === 'auth/invalid-email') {
+                return { success: false, error: 'Invalid email address.' };
+            } else if (error.code === 'auth/too-many-requests') {
+                return { success: false, error: 'Too many password reset attempts. Please try again later.' };
+            }
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * Verify password reset code
+     */
+    async verifyPasswordResetCode(oobCode) {
+        try {
+            const email = await auth.verifyPasswordResetCode(oobCode);
+            console.log('✅ Password reset code verified for:', email);
+            return { success: true, email: email };
+        } catch (error) {
+            console.error('❌ Code verification error:', error.message);
+            if (error.code === 'auth/invalid-action-code') {
+                return { success: false, error: 'This password reset link is invalid or has expired.' };
+            } else if (error.code === 'auth/expired-action-code') {
+                return { success: false, error: 'This password reset link has expired. Please request a new one.' };
+            }
+            return { success: false, error: 'Failed to verify reset code. Please try again.' };
+        }
+    }
+
+    /**
+     * Confirm password reset with new password
+     */
+    async confirmPasswordReset(oobCode, newPassword) {
+        try {
+            await auth.confirmPasswordReset(oobCode, newPassword);
+            console.log('✅ Password reset successful');
+            return { success: true, message: 'Password has been reset successfully. You can now login with your new password.' };
+        } catch (error) {
+            console.error('❌ Password confirmation error:', error.message);
+            if (error.code === 'auth/invalid-action-code') {
+                return { success: false, error: 'This password reset link is invalid or has expired.' };
+            } else if (error.code === 'auth/expired-action-code') {
+                return { success: false, error: 'This password reset link has expired. Please request a new one.' };
+            } else if (error.code === 'auth/weak-password') {
+                return { success: false, error: 'Password is too weak. Please choose a stronger password.' };
+            }
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * Change password for authenticated user
+     */
+    async changePassword(currentPassword, newPassword) {
+        try {
+            if (!this.currentUser) {
+                return { success: false, error: 'No user is currently logged in.' };
+            }
+
+            // Re-authenticate user before changing password
+            const email = this.currentUser.email;
+            const credential = auth.EmailAuthProvider.credential(email, currentPassword);
+            await this.currentUser.reauthenticateWithCredential(credential);
+
+            // Change password
+            await this.currentUser.updatePassword(newPassword);
+            console.log('✅ Password changed successfully');
+            return { success: true, message: 'Password changed successfully.' };
+        } catch (error) {
+            console.error('❌ Password change error:', error.message);
+            if (error.code === 'auth/wrong-password') {
+                return { success: false, error: 'Current password is incorrect.' };
+            } else if (error.code === 'auth/weak-password') {
+                return { success: false, error: 'New password is too weak.' };
+            }
+            return { success: false, error: error.message };
+        }
+    }
 }
 
 // Create global auth manager instance

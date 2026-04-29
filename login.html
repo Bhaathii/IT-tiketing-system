@@ -329,6 +329,7 @@
             <div style="display: flex; gap: 32px; margin-bottom: 32px; border-bottom: 2px solid #334155; padding-bottom: 0;">
                 <button class="tab-btn active" onclick="switchTab('login')">Login</button>
                 <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
+                <button class="tab-btn" onclick="switchTab('forgotPassword')">Forgot Password</button>
             </div>
 
             <!-- Login Tab -->
@@ -391,6 +392,32 @@
 
                     <p style="color: #94a3b8; font-size: 14px; margin-top: 16px; text-align: center;">
                         Already have an account? <button type="button" class="link-btn" onclick="switchTab('login')">Login here</button>
+                    </p>
+                </form>
+            </div>
+
+            <!-- Forgot Password Tab -->
+            <div id="forgotPassword-tab" class="tab-content hidden">
+                <div id="forgotPassword-error" class="error-msg"></div>
+                <div id="forgotPassword-success" class="success-msg"></div>
+
+                <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 24px; line-height: 1.6;">
+                    Enter your email address and we'll send you a link to reset your password.
+                </p>
+
+                <form id="forgotPassword-form" onsubmit="handleForgotPassword(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="forgotPassword-email" placeholder="your.email@company.com" required>
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        <span class="loading-spinner" id="forgotPassword-spinner"></span>
+                        <span id="forgotPassword-btn-text">Send Reset Link</span>
+                    </button>
+
+                    <p style="color: #94a3b8; font-size: 14px; margin-top: 16px; text-align: center;">
+                        Remember your password? <button type="button" class="link-btn" onclick="switchTab('login')">Login here</button>
                     </p>
                 </form>
             </div>
@@ -535,6 +562,41 @@
                 spinner.style.display = 'none';
                 btnText.textContent = 'Create Account';
                 document.getElementById('signup-form').style.pointerEvents = 'auto';
+            }
+        }
+
+        // Handle Forgot Password
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgotPassword-email').value;
+            const spinner = document.getElementById('forgotPassword-spinner');
+            const btnText = document.getElementById('forgotPassword-btn-text');
+
+            spinner.style.display = 'inline-block';
+            btnText.textContent = 'Sending...';
+            document.getElementById('forgotPassword-form').style.pointerEvents = 'none';
+
+            try {
+                const result = await authManager.sendPasswordResetEmail(email);
+                if (result.success) {
+                    showSuccess('forgotPassword', '✅ ' + result.message);
+                    document.getElementById('forgotPassword-form').reset();
+                    
+                    // Redirect back to login after a delay
+                    setTimeout(() => {
+                        switchTab('login');
+                    }, 3000);
+                } else {
+                    showError('forgotPassword', '❌ ' + result.error);
+                    spinner.style.display = 'none';
+                    btnText.textContent = 'Send Reset Link';
+                    document.getElementById('forgotPassword-form').style.pointerEvents = 'auto';
+                }
+            } catch (error) {
+                showError('forgotPassword', '❌ ' + error.message);
+                spinner.style.display = 'none';
+                btnText.textContent = 'Send Reset Link';
+                document.getElementById('forgotPassword-form').style.pointerEvents = 'auto';
             }
         }
 
