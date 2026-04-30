@@ -29,25 +29,53 @@ class AuthManager {
     }
 
     /**
-     * Determine if user is admin or employee
-     * Admins have email in a specific list
+     * Determine if user is admin or employee.
+     * Priority: check Firestore `users/{uid}.role` → fallback to hard-coded email list.
+     * This makes hosted and localhost behavior consistent when Firestore has the authoritative role.
      */
-    determineUserRole(user) {
+    async determineUserRole(user) {
+        const emailToCheck = (user.email || '').toLowerCase();
+
+        // First, try to read role from Firestore users collection
+        try {
+            if (typeof db !== 'undefined') {
+                const docRef = db.collection('users').doc(user.uid);
+                const doc = await docRef.get();
+                if (doc.exists) {
+                    const data = doc.data() || {};
+                    if (data.role && data.role.toLowerCase() === 'admin') {
+                        this.userRole = 'admin';
+                        console.log('🔒 ADMIN ROLE ASSIGNED (from Firestore):', emailToCheck);
+                        return this.userRole;
+                    }
+                }
+            }
+        } catch (fireErr) {
+            console.warn('⚠️ Could not read role from Firestore:', fireErr.message);
+            // fall through to email list fallback
+        }
+
+        // Fallback: hard-coded admin emails (kept for quick dev access)
         const adminEmails = [
+            'a4@gmail.com',
+            'nwnbhathiya@gmail.com',
             'a2@gmail.com',
+            'a3@gmail.com',
             'admin1@gmail.com',
             'admin@company.com',
             'admin@it-ticketing-system-c637b.firebaseapp.com',
             'it-admin@company.com'
         ];
-        const emailToCheck = user.email.toLowerCase();
+
         if (adminEmails.includes(emailToCheck)) {
             this.userRole = 'admin';
-            console.log('🔒 ADMIN ROLE ASSIGNED:', emailToCheck);
+            console.log('🔒 ADMIN ROLE ASSIGNED (from list):', emailToCheck);
         } else {
             this.userRole = 'employee';
             console.log('👥 EMPLOYEE ROLE ASSIGNED:', emailToCheck);
         }
+
+        return this.userRole;
     }
 
     /**
@@ -197,7 +225,15 @@ class AuthManager {
      */
     async waitForAuth() {
         return new Promise((resolve) => {
-            const unsubscribe = auth.onAuthStateChanged((user) => {
+            const unsubscribe = auth.onAuthStateChanged(async (user) => {
+                // If user present, attempt to determine role (may read Firestore)
+                if (user) {
+                    try {
+                        await this.determineUserRole(user);
+                    } catch (e) {
+                        console.warn('⚠️ determineUserRole error in waitForAuth:', e.message);
+                    }
+                }
                 unsubscribe();
                 resolve(user);
             });
