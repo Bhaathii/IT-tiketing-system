@@ -34,6 +34,7 @@ class AuthManager {
      */
     determineUserRole(user) {
         const adminEmails = [
+            'a2@gmail.com',
             'admin1@gmail.com',
             'admin@company.com',
             'admin@it-ticketing-system-c637b.firebaseapp.com',
