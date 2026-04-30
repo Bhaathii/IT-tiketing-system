@@ -1,0 +1,23 @@
+{
+  "name": "it-ticketing-system",
+  "version": "1.0.0",
+  "description": "The Internal IT Ticketing System is a web-based platform designed to streamline technical support operations within organizations. It allows employees to submit IT issues and enables the IT team to manage, track, and resolve tickets efficiently.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bhaathii/IT-tiketing-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bhaathii/IT-tiketing-system/issues"
+  },
+  "homepage": "https://github.com/Bhaathii/IT-tiketing-system#readme",
+  "dependencies": {
+    "firebase-admin": "^10.1.0"
+  }
+}

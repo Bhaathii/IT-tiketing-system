@@ -57,6 +57,7 @@ class AuthManager {
 
         // Fallback: hard-coded admin emails (kept for quick dev access)
         const adminEmails = [
+            'n@gmail.com',
             'a4@gmail.com',
             'nwnbhathiya@gmail.com',
             'a2@gmail.com',
