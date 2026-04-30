@@ -34,6 +34,7 @@ class AuthManager {
      */
     determineUserRole(user) {
         const adminEmails = [
+            'admin1@gmail.com',
             'admin@company.com',
             'admin@it-ticketing-system-c637b.firebaseapp.com',
             'it-admin@company.com'
@@ -91,10 +92,14 @@ class AuthManager {
             const userCredential = await auth.signInWithEmailAndPassword(email, password);
             const user = userCredential.user;
 
-            // Update last login in Firestore
-            await db.collection('users').doc(user.uid).update({
-                lastLogin: new Date()
-            });
+            // Update last login in Firestore (create if doesn't exist)
+            try {
+                await db.collection('users').doc(user.uid).set({
+                    lastLogin: new Date()
+                }, { merge: true });
+            } catch (firestoreError) {
+                console.warn('⚠️ Firestore update warning (login still successful):', firestoreError.message);
+            }
 
             this.determineUserRole(user);
             console.log('✅ Login successful:', email);
