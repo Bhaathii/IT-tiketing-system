@@ -209,7 +209,14 @@
                 return;
             }
             
-            // Pre-fill email and user info
+            // If user is an admin, redirect to admin dashboard
+            if (authManager.isAdmin()) {
+                console.log('🔐 Admin detected on user portal - redirecting to admin dashboard');
+                window.location.href = 'admin-dashboard.html';
+                return;
+            }
+
+            // Pre-fill email and user info for regular users
             document.getElementById('email').value = user.email;
             document.getElementById('email').readOnly = true;
             document.getElementById('user-email').textContent = `👤 ${user.displayName || user.email}`;
